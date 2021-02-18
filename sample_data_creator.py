@@ -3,6 +3,7 @@ import pandas as pd
 import namegenerator
 from datetime import date, datetime, timedelta
 import sqlalchemy as db
+import random
 
 # function to create a new user
 def create_user():
@@ -78,8 +79,27 @@ for i in range(user_number):
     pd_claim = pd.DataFrame(new_claim, columns = claims.columns)
     claims = claims.append(pd_claim, ignore_index=True)
 
-print(users)
-print(claims)
+# print(users)
+# print(claims)
+
+# generate user_groups
+policies = [1, 2, 3, 4]
+user_number = 1001
+
+def generate_groups(user_number, policies):
+    groups = []
+    for i in range(user_number):
+        random_number = np.random.choice([1,2,3,4], p=[0.4,0.3,0.2,0.1])
+        personal_policies = random.sample(policies, random_number)
+        for element in personal_policies:
+            groups.append([i+1, element])
+    
+    return groups
+
+groups = generate_groups(user_number, policies)
+
+user_groups = pd.DataFrame(groups, columns = ['user_id', 'pol_id'])
+
 
 # Connect to db and write generated data to tables
 # specify database configurations
@@ -104,5 +124,6 @@ connection = engine.connect()
 
 entry_users = users.to_sql('users', connection, if_exists='append', index=False)
 entry_claims = claims.to_sql('claims', connection, if_exists='append', index=False)
-
+entry_groups = user_groups.to_sql('user_groups', connection, if_exists='append', index = False)
+    
 
