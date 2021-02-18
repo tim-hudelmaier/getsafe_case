@@ -20,7 +20,7 @@ def create_user():
     
     # for a small portion of users (estimating a monthly retention of 99%) create a canellation date
     date1 = date.fromisoformat(sign_up)
-    final_date = date(2020, 12, 25)
+    final_date = date(2020, 12, 29)
     month = timedelta(weeks=4)
     active_months = 0
 
@@ -28,13 +28,55 @@ def create_user():
         date1 = date1 + month
         active_months += 1 
         leave = (.99 <= np.random.random_sample())
+        cancellation = ''
         if leave == True:
             cancellation = date1.isoformat()
-            break
-        else:
-            cancellation = '' 
+            break 
 
     user_data = [name, plz, 1, sign_up, cancellation]
     return user_data
 
-create_user()
+# create_user()
+
+def create_claims(user_data, user_id):
+    claims = []
+    claim_information = ['Phone', 'Car', 'Home', 'Bike', 'X']
+
+    start_date = date.fromisoformat(user_data[3])
+    if user_data[4] == '':
+        end_date = date(2020, 12, 25)
+    else: end_date = date.fromisoformat(user_data[4])
+    week = timedelta(weeks = 1)
+
+    while start_date <= end_date:
+        incident = np.random.choice(claim_information, p=[0.01, 0.001, 0.02, 0.01, 0.959])
+        value = 0
+        if incident == 'Phone': value = np.random.normal(100.0, 20.0)
+        elif incident == 'Car': value = np.random.normal(1000.0, 100.0)
+        elif incident == 'Home': value = np.random.normal(50.0, 10.0)
+        elif incident == 'Bike': value = np.random.normal(250.0, 50.0)
+
+        if value > 0:
+            claims.append([user_id, incident, int(value), start_date])
+
+        start_date = start_date + week
+
+    return claims
+
+
+# Populate dataframes with random sample data
+user_number = 1000
+users = pd.DataFrame(columns = ['name', 'plz', 'multiplier', 'sign_up', 'cancelled'])
+claims = pd.DataFrame(columns = ['user_id', 'information', 'claim_height', 'date'])
+
+for i in range(user_number):
+    new_user = create_user()
+    pd_new_user = pd.Series(new_user, index = users.columns)
+    users = users.append(pd_new_user, ignore_index = True)
+
+    new_claim = create_claims(new_user, i)
+    pd_claim = pd.DataFrame(new_claim, columns = claims.columns)
+    claims = claims.append(pd_claim, ignore_index=True)
+
+print(users)
+print(claims)
