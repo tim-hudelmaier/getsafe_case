@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import namegenerator
 from datetime import date, datetime, timedelta
-
+import sqlalchemy as db
 
 # function to create a new user
 def create_user():
@@ -28,7 +28,7 @@ def create_user():
         date1 = date1 + month
         active_months += 1 
         leave = (.99 <= np.random.random_sample())
-        cancellation = ''
+        cancellation = None
         if leave == True:
             cancellation = date1.isoformat()
             break 
@@ -43,7 +43,7 @@ def create_claims(user_data, user_id):
     claim_information = ['Phone', 'Car', 'Home', 'Bike', 'X']
 
     start_date = date.fromisoformat(user_data[3])
-    if user_data[4] == '':
+    if user_data[4] == None:
         end_date = date(2020, 12, 25)
     else: end_date = date.fromisoformat(user_data[4])
     week = timedelta(weeks = 1)
@@ -80,3 +80,29 @@ for i in range(user_number):
 
 print(users)
 print(claims)
+
+# Connect to db and write generated data to tables
+# specify database configurations
+config = {
+            'host': 'localhost',
+            'port': 3306,
+            'user': 'tim',
+            'password': '13-erTuer',
+            'database': 'getsafe_db'
+         }
+
+db_user = config.get('user')
+db_pwd = config.get('password')
+db_host = config.get('host')
+db_port = config.get('port')
+db_name = config.get('database')
+# specify connection string
+connection_str = f'mysql+pymysql://{db_user}:{db_pwd}@{db_host}:{db_port}/{db_name}'
+# connect to database
+engine = db.create_engine(connection_str)
+connection = engine.connect()
+
+entry_users = users.to_sql('users', connection, if_exists='append', index=False)
+entry_claims = claims.to_sql('claims', connection, if_exists='append', index=False)
+
+
