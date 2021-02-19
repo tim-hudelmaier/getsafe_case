@@ -75,7 +75,7 @@ for i in range(user_number):
     pd_new_user = pd.Series(new_user, index = users.columns)
     users = users.append(pd_new_user, ignore_index = True)
 
-    new_claim = create_claims(new_user, i)
+    new_claim = create_claims(new_user, i+1)
     pd_claim = pd.DataFrame(new_claim, columns = claims.columns)
     claims = claims.append(pd_claim, ignore_index=True)
 
