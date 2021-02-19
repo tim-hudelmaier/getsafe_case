@@ -53,13 +53,8 @@ def plot_user_numbers():
 
     print(user_change)
 
-    fig, comp = plt.subplots()
-    comp.set_title('User numbers over time')
-    comp.set_ylabel('Users')
-    comp = sns.lineplot(x = 'dates', y = 'compounds', data = user_change) 
-    change = comp.twinx()
-    change.set_ylabel('change in users')
-    change = sns.barplot(x='dates', y='user_growth', data = user_change)
+   
+    sns.lineplot(x = 'dates', y = 'compounds', data = user_change) 
     plt.savefig('user_numbers.png')
 
 plot_user_numbers()
