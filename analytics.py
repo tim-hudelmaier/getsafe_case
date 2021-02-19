@@ -73,9 +73,9 @@ def plot_user_revenue(user_id):
     print(user_data)
 
     day = timedelta(days = 1)
-    sign_up_d = date.fromisoformat(user_data['sign_up'])
-    if user_data['cancelled'] != 'NULL':
-        end_d = date.fromisoformat(user_data['sign_up'])
+    sign_up_d = user_data['sign_up']
+    if user_data['cancelled'].iloc[0] != None:
+        end_d = user_data['sign_up']
     else: end_d = date.today()
 
     revenue_data = []
@@ -83,24 +83,29 @@ def plot_user_revenue(user_id):
 
     days = timedelta(days = 0)
     month = timedelta(days = 30)
-    while sign_up_d <= end_d:
+    # print(sign_up_d)
+    # print(end_d)
+    while sign_up_d.iloc[0] <= end_d:
         if days < month:
             days += day
         else:
             comp_returns += user_policies['cost_per_month'].sum()
-            revenue_data.append([sign_up_d, comp_returns])
+            revenue_data.append([sign_up_d.iloc[0], comp_returns])
             days = timedelta(days = 0)
 
-        if sign_up_d in user_claims['date']:
+        if sign_up_d in user_claims['date'].values:
             comp_returns -= user_claims['claim_height'].loc[user_claims[user_claims['date']==sign_up_d].index.values].iloc[0]
-            revenue_data.append([sign_up_d, comp_returns])
+            revenue_data.append([sign_up_d.iloc[0], comp_returns])
 
         sign_up_d = sign_up_d + day
 
-    compound_returns = pd.DataFrame(revenue_data, columns=['date', 'compunded returns'])
+    compound_returns = pd.DataFrame(revenue_data, columns=['date', 'compounded returns'])
+
+    # print(compound_returns)
 
     sns.lineplot(x = 'date', y = 'compounded returns', data = compound_returns)
-    plt.safefig('comp_returns_on_user_%s.png' % user_id)
+    plt.savefig('comp_returns_on_user_%s.png' % user_id)
 
-    plot_user_revenue(666)
+
+plot_user_revenue(666)
 
