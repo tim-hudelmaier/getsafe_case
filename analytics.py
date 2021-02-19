@@ -85,8 +85,8 @@ def plot_user_revenue(user_id):
     month = timedelta(days = 30)
     # print(sign_up_d)
     # print(end_d)
-    print(user_data)
-    print(user_claims)
+    # print(user_data)
+    # print(user_claims)
     while sign_up_d.iloc[0] <= end_d:
         if days < month:
             days += day
@@ -96,7 +96,7 @@ def plot_user_revenue(user_id):
             days = timedelta(days = 0)
 
         if sign_up_d.iloc[0] in user_claims['date'].values.tolist():
-            print('check!')
+            # print('check!')
             comp_returns -= user_claims['claim_height'].loc[user_claims[user_claims['date']==sign_up_d.iloc[0]].index.values].iloc[0]
             revenue_data.append([sign_up_d.iloc[0], comp_returns])
 
@@ -110,5 +110,5 @@ def plot_user_revenue(user_id):
     plt.savefig('comp_returns_on_user_%s.png' % user_id)
 
 
-plot_user_revenue(332)
+plot_user_revenue(322)
 
