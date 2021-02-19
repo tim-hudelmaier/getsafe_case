@@ -83,32 +83,21 @@ def plot_user_revenue(user_id):
 
     days = timedelta(days = 0)
     month = timedelta(days = 30)
-    print(sign_up_d.iloc[0])
+    # print(sign_up_d)
     # print(end_d)
-    print(user_claims)
-    su = date().fromisoformat(str(sign_up_d.iloc[0]))
-    while su <= end_d:
+    while sign_up_d.iloc[0] <= end_d:
         if days < month:
             days += day
         else:
             comp_returns += user_policies['cost_per_month'].sum()
             revenue_data.append([sign_up_d.iloc[0], comp_returns])
             days = timedelta(days = 0)
-        # print(user_claims.date.values.tolist())
-        # print(type(user_claims.date.values.tolist()[0]))
-        # print(sign_up_d.iloc[0])
-        # print(type(sign_up_d.iloc[0]))
-        # print(user_claims['claim_height'])
-        # user_claims.set_index('date', inplace=True)
-        
-        # print(user_claims)
-        # sign_up_d.iloc[0] = date(2018, 7, 5)
 
-        if su == user_claims.date.values.tolist()[0]:
-            print('works!')
-            # revenue_data.append([sign_up_d.iloc[0], comp_returns])
-        
-        su = su + day
+        if sign_up_d.iloc[0] in user_claims['date'].values:
+            comp_returns -= user_claims['claim_height'].loc[user_claims[user_claims['date']==sign_up_d].index.values].iloc[0]
+            revenue_data.append([sign_up_d.iloc[0], comp_returns])
+
+        sign_up_d = sign_up_d + day
 
     compound_returns = pd.DataFrame(revenue_data, columns=['date', 'compounded returns'])
 
@@ -118,5 +107,5 @@ def plot_user_revenue(user_id):
     plt.savefig('comp_returns_on_user_%s.png' % user_id)
 
 
-plot_user_revenue(332)
+plot_user_revenue(666)
 
