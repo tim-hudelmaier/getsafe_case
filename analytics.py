@@ -2,6 +2,7 @@ import sqlalchemy as db
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+from datetime import date, datetime, timedelta
 
 # specify database configurations
 config = {
@@ -69,7 +70,37 @@ def plot_user_revenue(user_id):
         if row['claim_height'] > user_policies['max_claim'].loc[user_policies[user_policies['pol_name']==row['information']].index.values].iloc[0]:
             user_claims.drop(index)
 
+    print(user_data)
 
+    day = timedelta(days = 1)
+    sign_up_d = date.fromisoformat(user_data['sign_up'])
+    if user_data['cancelled'] != 'NULL':
+        end_d = date.fromisoformat(user_data['sign_up'])
+    else: end_d = date.today()
+
+    revenue_data = []
+    comp_returns = 0
+
+    days = timedelta(days = 0)
+    month = timedelta(days = 30)
+    while sign_up_d <= end_d:
+        if days < month:
+            days += day
+        else:
+            comp_returns += user_policies['cost_per_month'].sum()
+            revenue_data.append([sign_up_d, comp_returns])
+            days = timedelta(days = 0)
+
+        if sign_up_d in user_claims['date']:
+            comp_returns -= user_claims['claim_height'].loc[user_claims[user_claims['date']==sign_up_d].index.values].iloc[0]
+            revenue_data.append([sign_up_d, comp_returns])
+
+        sign_up_d = sign_up_d + day
+
+    compound_returns = pd.DataFrame(revenue_data, columns=['date', 'compunded returns'])
+
+    sns.lineplot(x = 'date', y = 'compounded returns', data = compound_returns)
+    plt.safefig('comp_returns_on_user_%s.png' % user_id)
 
     plot_user_revenue(666)
 
