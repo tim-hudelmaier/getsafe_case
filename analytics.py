@@ -93,7 +93,7 @@ def plot_user_revenue(user_id):
             revenue_data.append([sign_up_d.iloc[0], comp_returns])
             days = timedelta(days = 0)
 
-        if sign_up_d in user_claims['date'].values:
+        if sign_up_d.iloc[0] in user_claims.date.values:
             comp_returns -= user_claims['claim_height'].loc[user_claims[user_claims['date']==sign_up_d].index.values].iloc[0]
             revenue_data.append([sign_up_d.iloc[0], comp_returns])
 
@@ -107,5 +107,5 @@ def plot_user_revenue(user_id):
     plt.savefig('comp_returns_on_user_%s.png' % user_id)
 
 
-plot_user_revenue(666)
+plot_user_revenue(332)
 
