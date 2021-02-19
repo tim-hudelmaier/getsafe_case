@@ -34,15 +34,15 @@ def plot_user_numbers():
     sign_ups.rename(columns={'sign_up' : 'dates'}, inplace=True)
     sign_outs.rename(columns={'cancelled' : 'dates'}, inplace=True)
     
-    print(sign_ups)
-    print(sign_outs)
+    # print(sign_ups)
+    # print(sign_outs)
 
     user_change = [sign_ups, sign_outs]
 
     user_change = pd.concat(user_change)
     user_change = user_change.sort_values(by='dates')
     user_change = user_change.reset_index(drop=True)
-    print(user_change)
+    # print(user_change)
 
     compound = []
 
@@ -51,10 +51,25 @@ def plot_user_numbers():
 
     user_change['compounds'] = compound
 
-    print(user_change)
+    # print(user_change)
 
    
     sns.lineplot(x = 'dates', y = 'compounds', data = user_change) 
     plt.savefig('user_numbers.png')
 
-plot_user_numbers()
+# plot_user_numbers()
+
+def plot_user_revenue(user_id):
+    user_data = pd.read_sql("SELECT * FROM users WHERE user_id = %s ;" % user_id, connection)
+    user_claims = pd.read_sql("SELECT * FROM claims WHERE user_id = %s AND information IN (SELECT pol_name FROM policies WHERE pol_id IN (SELECT pol_id FROM user_groups WHERE user_id = %s));" % (user_id, user_id), connection)
+    user_policies = pd.read_sql("SELECT * FROM policies WHERE pol_id IN (SELECT pol_id FROM user_groups WHERE user_id = %s);" % user_id,connection)
+
+    # clean claims from too high claims
+    for index, row in user_claims.iterrows():
+        if row['claim_height'] > user_policies['max_claim'].loc[user_policies[user_policies['pol_name']==row['information']].index.values].iloc[0]:
+            user_claims.drop(index)
+
+
+
+    plot_user_revenue(666)
+
